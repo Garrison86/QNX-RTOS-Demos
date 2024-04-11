@@ -6,8 +6,9 @@
 #include <stdbool.h>
 
 ///////// GLOBAL VARIABLES ///////////
-void sigint_handler(int sig);
 volatile bool usr1Happened = false;
+void sigint_handler();
+
 
  ////////////// main( ) //////////////
 int main(void) {
@@ -22,9 +23,7 @@ int main(void) {
  * // a specific response.                                                      //
  * ///////////////////////////////////////////////////////////////////////////////
  */
-
 	char string[140];
-	sigset_t set;
 
 	///////// SIG SETUP ///////////
     /*
@@ -53,14 +52,17 @@ int main(void) {
 
 	// sa_flags – Special flags to affect signal behaviour
 	// These flags adjust how to respond to events.
-	sa.sa_flags = 0; // or SA_RESTART
+	sa.sa_flags = 0;
 
 	// sa_mask – A set of signals to mask (block) during a signal handler.
 	// This is a helper function to do the bitwise work for us
 	sigemptyset(&sa.sa_mask); // – Remove all signals from &sa.sa_mask (Clears all roadblocks, starting fresh.)
 
 
-	if (sigaction(SIGINT, &sa, NULL) == -1) {
+	// in this case `SIGUSR1` is the signal you will be attaching a handler.
+	int sigactfunc = sigaction(SIGUSR1, &sa, NULL); // returns an int
+
+	if ( sigactfunc == -1) {
 		perror("sigaction");
 		exit(1);
 	}
@@ -71,14 +73,16 @@ int main(void) {
 	while(!usr1Happened){
 		printf("PID = %d:\t\t Running...\n", getpid());
 		printf("Enter a string:  ");
-		if(fgets(string, sizeof string, stdin) == NULL)
-			perror("fgets");
-		else
-			printf("You entered: %s\n", string);
+		if(fgets(string, sizeof string, stdin) == NULL){
+			printf("\n");
+		} else {
+			printf("You entered:\t%s\n", string);
+		}
 	}
 	/////////////////////////////////////////////////////
 
 
+	///////////////// EXITING ////////////////////
 	printf("PID = %d:\t\t Recived SIGUSR1\n", getpid());
 	printf("PID = %d:\t\t Exiting...\n", getpid());
 
@@ -86,8 +90,8 @@ int main(void) {
 	return EXIT_SUCCESS;
 }
 
+
 ////////// SIGINT HANDLER ////////////////
-void sigint_handler(int sig) {
+void sigint_handler() {
 	usr1Happened = true;
-	write(0, "\nAhhh! SIGINT!\n", 14);
 }
