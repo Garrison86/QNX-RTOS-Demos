@@ -10,31 +10,34 @@
 
 int main() {
     int numWakeup = 0;
-    sem_t *sem;
+    sem_t *semaphore;
 
 
-    // Initialize semaphore
-    if ((sem = sem_open("namedSemaphore", O_CREAT, S_IWOTH, 1))
-           == SEM_FAILED) {
+    // The named semaphore from `thread-factory`
+    semaphore = sem_open("namedSemaphore", O_CREAT, S_IWOTH, 1);
+    if (semaphore == SEM_FAILED) {
        printf("Error in sem_open method");
        exit(1);
    }
 
     printf("Thread-waker PID = %d\n", getpid());
 
+
+    //========================================
+    //= PROCESS UNTIL ALL THREADS ARE AWAKE  =
+    //========================================
     do {
-        // Prompt user for the number of threads to wake up
         printf("Enter the number of threads to wake up (enter 0 to exit): \n");
         scanf("%d", &numWakeup);
 
-        // Increment semaphore by the specified number
         for (int i = 0; i < numWakeup; i++) {
-            sem_post(sem);
+            sem_post(semaphore); // increment a named or unnamed semaphore
         }
 
     } while (numWakeup > 0);
 
-    // Close the semaphore
-    sem_close(sem);
+
+
+    sem_close(semaphore);
     return EXIT_SUCCESS;
 }
