@@ -7,6 +7,7 @@
 
 ///////// GLOBAL VARIABLES ///////////
 volatile bool usr1Happened = false;
+//volatile sig_atomic_t usr1Happened; // the sig_atomic_t is not found
 void sigint_handler();
 
 
@@ -31,11 +32,9 @@ int main(void) {
 	follow a few steps.
 
 	- 1. Create a sigaction struct
-	- 	Populate it with the desired signal handler
-	- 	Setup any additional signal handling options.
 
 	- 2. Setup the Signal Mask
-	-  	This is a list of Signals to block while within the signal handler.
+
 	*/
 
 	// The sigaction structure is like a detailed

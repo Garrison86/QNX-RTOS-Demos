@@ -48,7 +48,6 @@ int main(void) {
 	}
 
 	childCounter = 0;
-
     while(childCounter < numbOfChildren){
     	pid_t terminatedChild = wait(NULL);
     	if(terminatedChild != -1){
@@ -62,8 +61,7 @@ int main(void) {
 	return 0;
 }
 
-
-////////// SIGINT HANDLER ////////////////
+//////// SIGINT HANDLER //////////
 void sigint_handler() {
 	usr1Happened = true;
 }
